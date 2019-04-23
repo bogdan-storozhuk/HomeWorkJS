@@ -1,7 +1,7 @@
 window.addEventListener('DOMContentLoaded', function () {
     'use strict';
     let tab = document.querySelectorAll(".info-header-tab"),
-        info = document.querySelector(".info-header"),
+        infoTab = document.querySelector(".info-header"),
         tabContent = document.querySelectorAll(".info-tabcontent");
 
     function hideTabContent(a) {
@@ -18,7 +18,7 @@ window.addEventListener('DOMContentLoaded', function () {
             tabContent[b].classList.add('show');
         }
     }
-    info.addEventListener('click', function (event) {
+    infoTab.addEventListener('click', function (event) {
         let target = event.target;
         if (target && target.classList.contains("info-header-tab")) {
             for (let i = 0; i < tab.length; i++) {
@@ -73,4 +73,29 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     }
     setClock('timer', deadline);
+
+    //MODAL
+    let more = document.querySelector('.more'),
+        overlay = document.querySelector('.overlay'),
+        close = document.querySelector('.popup-close'),
+        info = document.querySelector('.info');
+    more.addEventListener('click', function () {
+        showModalWindow.call(this);
+    });
+    info.addEventListener('click', function (event) {
+        let target = event.target;
+        if (!target.classList.contains('description-btn')) return;
+        showModalWindow.call(target);
+    });
+    close.addEventListener('click', function () {
+        overlay.style.display = 'none';
+        more.classList.remove('more-splash');
+        document.body.style.overflow = '';
+    });
+
+    function showModalWindow() {
+        overlay.style.display = 'block';
+        this.classList.add('more-splash');
+        document.body.style.overflow = 'hidden';
+    }
 });
