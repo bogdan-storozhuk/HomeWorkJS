@@ -1,4 +1,4 @@
-window.addEventListener('DOMContentLoaded', function () {
+window.addEventListener('DOMContentLoaded', () => {
     'use strict';
     let tab = document.querySelectorAll(".info-header-tab"),
         infoTab = document.querySelector(".info-header"),
@@ -18,7 +18,7 @@ window.addEventListener('DOMContentLoaded', function () {
             tabContent[b].classList.add('show');
         }
     }
-    infoTab.addEventListener('click', function (event) {
+    infoTab.addEventListener('click', (event) => {
         let target = event.target;
         if (target && target.classList.contains("info-header-tab")) {
             for (let i = 0; i < tab.length; i++) {
@@ -79,15 +79,15 @@ window.addEventListener('DOMContentLoaded', function () {
         overlay = document.querySelector('.overlay'),
         close = document.querySelector('.popup-close'),
         info = document.querySelector('.info');
-    more.addEventListener('click', function () {
+    more.addEventListener('click', ()=> {
         showModalWindow.call(this);
     });
-    info.addEventListener('click', function (event) {
+    info.addEventListener('click', (event)=> {
         let target = event.target;
         if (!target.classList.contains('description-btn')) return;
         showModalWindow.call(target);
     });
-    close.addEventListener('click', function () {
+    close.addEventListener('click', ()=> {
         overlay.style.display = 'none';
         more.classList.remove('more-splash');
         document.body.style.overflow = '';
