@@ -79,15 +79,15 @@ window.addEventListener('DOMContentLoaded', () => {
         overlay = document.querySelector('.overlay'),
         close = document.querySelector('.popup-close'),
         info = document.querySelector('.info');
-    more.addEventListener('click', ()=> {
+    more.addEventListener('click', () => {
         showModalWindow.call(this);
     });
-    info.addEventListener('click', (event)=> {
+    info.addEventListener('click', (event) => {
         let target = event.target;
         if (!target.classList.contains('description-btn')) return;
         showModalWindow.call(target);
     });
-    close.addEventListener('click', ()=> {
+    close.addEventListener('click', () => {
         overlay.style.display = 'none';
         more.classList.remove('more-splash');
         document.body.style.overflow = '';
@@ -97,5 +97,52 @@ window.addEventListener('DOMContentLoaded', () => {
         overlay.style.display = 'block';
         this.classList.add('more-splash');
         document.body.style.overflow = 'hidden';
+    }
+
+    //Form - AJAX
+    let message = {
+        loading: "Загрузка...",
+        success: "Спасибо! Скоро мы с вами свяжемся!",
+        failure: "Что-то пошло не так..."
+    };
+    let mainForm = document.querySelector('.main-form'),
+        mainInputs = form.getElementsByTagName('input'),
+        statusMessage = document.createElement('div'),
+        compactForm = document.querySelector('#form'),
+        compactInputs = compactForm.getElementsByTagName('input');
+    statusMessage.classList.add('status');
+    mainForm.addEventListener('submit', () => {
+        setupRequest.call(this, mainForm, mainInputs);
+    });
+    //Compact form- AJAX
+    compactForm.addEventListener('submit', () => {
+        setupRequest.call(this, compactForm, compactInputs);
+    });
+
+    function setupRequest(form, inputs) {
+        event.preventDefault();
+        form.appendChild(statusMessage);
+        let request = new XMLHttpRequest();
+        request.open('POST', 'server.php');
+        request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+        let formData = new FormData(compactForm);
+        let obj = {};
+        formData.forEach((value, key) => {
+            obj[key] = value;
+        });
+        let json = JSON.stringify(obj);
+        request.send(json);
+        request.addEventListener('readystatechange', () => {
+            if (request.readyState < 4) {
+                statusMessage.innerHTML = message.loading;
+            } else if (request.readyState == 4 && request.status == 200) {
+                statusMessage.innerHTML = message.success;
+            } else {
+                statusMessage.innerHTML = message.failure;
+            }
+        });
+        for (let i = 0; i < inputs.length; i++) {
+            inputs[i].value = '';
+        }
     }
 });
