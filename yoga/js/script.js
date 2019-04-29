@@ -106,43 +106,53 @@ window.addEventListener('DOMContentLoaded', () => {
         failure: "Что-то пошло не так..."
     };
     let mainForm = document.querySelector('.main-form'),
-        mainInputs = form.getElementsByTagName('input'),
+        mainInputs = mainForm.getElementsByTagName('input'),
         statusMessage = document.createElement('div'),
         compactForm = document.querySelector('#form'),
         compactInputs = compactForm.getElementsByTagName('input');
     statusMessage.classList.add('status');
-    mainForm.addEventListener('submit', () => {
-        setupRequest.call(this, mainForm, mainInputs);
-    });
-    //Compact form- AJAX
-    compactForm.addEventListener('submit', () => {
-        setupRequest.call(this, compactForm, compactInputs);
-    });
 
-    function setupRequest(form, inputs) {
-        event.preventDefault();
-        form.appendChild(statusMessage);
-        let request = new XMLHttpRequest();
-        request.open('POST', 'server.php');
-        request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
-        let formData = new FormData(compactForm);
-        let obj = {};
-        formData.forEach((value, key) => {
-            obj[key] = value;
-        });
-        let json = JSON.stringify(obj);
-        request.send(json);
-        request.addEventListener('readystatechange', () => {
-            if (request.readyState < 4) {
-                statusMessage.innerHTML = message.loading;
-            } else if (request.readyState == 4 && request.status == 200) {
-                statusMessage.innerHTML = message.success;
-            } else {
-                statusMessage.innerHTML = message.failure;
+    function sendForm(elem, inputs) {
+        elem.addEventListener('submit', (event) => {
+            event.preventDefault();
+            elem.appendChild(statusMessage);
+            let formData = new FormData(elem);
+            let obj = {};
+            formData.forEach((value, key) => {
+                obj[key] = value;
+            });
+            let json = JSON.stringify(obj);
+
+            function postData(data) {
+                return new Promise(function (resolve, reject) {
+                    let request = new XMLHttpRequest();
+                    request.open('POST', 'server.php');
+                    request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+                    request.send(data);
+                    request.addEventListener('readystatechange', () => {
+                        if (request.readyState < 4) {
+                            resolve();
+                        } else if (request.readyState == 4 && request.status == 200) {
+                            resolve();
+                        } else {
+                            reject();
+                        }
+                    });
+                });
+
             }
+
+            function clearInputs(inputs) {
+                for (let i = 0; i < inputs.length; i++) {
+                    inputs[i].value = '';
+                }
+            }
+            postData(json).then(() => statusMessage.innerHTML = message.loading)
+                .then(() => statusMessage.innerHTML = message.success)
+                .catch(() => statusMessage.innerHTML = message.failure)
+                .then(clearInputs(inputs));
         });
-        for (let i = 0; i < inputs.length; i++) {
-            inputs[i].value = '';
-        }
     }
+    sendForm(mainForm, mainInputs);
+    sendForm(compactForm, compactInputs);
 });
