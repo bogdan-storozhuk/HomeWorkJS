@@ -8,9 +8,9 @@ inputRub.addEventListener('input', () => {
             request.open('GET', 'js/current.json');
             request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
             request.send();
-            request.addEventListener('readystatechange', function () {
+            request.addEventListener('load', function () {
                 if (request.readyState === 4 && request.status == 200) {
-                    resolve();
+                    resolve(request.response);
                 } else {
                     reject();
                 }
@@ -18,9 +18,9 @@ inputRub.addEventListener('input', () => {
         });
     }
     convertValue()
-        .then(() => {
-            let data = JSON.parse(request.response);
+        .then((value) => {
+            let data = JSON.parse(value);
             inputUsd.value = inputRub.value / data.usd;
         })
-        .reject(()=>inputUsd.value = "Что-то пошло не так!");
+        .catch(()=>inputUsd.value = "Что-то пошло не так!");
 });
